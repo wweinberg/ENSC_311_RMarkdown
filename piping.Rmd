@@ -1,0 +1,191 @@
+---
+title: "Week 7 Piping"
+author: "WCW"
+date: "2026-02-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#load the tidyverse package
+
+requiredPackages = c('tidyverse', 'nlme')
+for(p in requiredPackages){
+  if(!require(p,character.only = TRUE)) install.packages(p)
+  library(p,character.only = TRUE)
+}
+```
+
+## Piping in tidyverse: back to basics (again)
+
+A pipe looks like this: %>% 
+And can be used like this:
+
+```{r cars}
+iris2<- iris %>% 
+  filter(iris$Species == 'setosa')
+```
+
+## .... What?
+
+piping combines functions into a sequential pipeline, each step is performed step by step
+
+So the above says 
+    1. Make a new dataframe called 'iris2' that is a copy of iris
+    2. After making this dataframe SUBSET it to just 'setosa' species.
+    
+    
+## How is this different from what we just learned like a week ago?
+
+Well you could do...
+
+```{r pressure, echo=FALSE}
+iris3 <- iris[iris$Species == 'setosa',]
+
+```
+
+## ... Right.
+
+But what if we want to do more 
+```{r p1, echo=FALSE}
+iris3 <- iris[iris$Species == "setosa" & iris$Sepal.Length > 5, ]
+rm(list = ls())
+```
+## ... ORRRRR
+
+```{r p2, echo=FALSE}
+iris4 <- iris[iris$Species == "setosa" & iris$Sepal.Length > 5 & iris$Petal.Width>0.3 & iris$Sepal.Width>4, ]
+
+```
+
+## Wow that sucks to look at, what does it even say?
+
+
+I know right? 
+
+
+That's why the tidyverse exists
+
+```{r p3, echo=FALSE}
+
+
+iris2<- iris %>% 
+  filter(Species == 'setosa') %>% 
+  filter(Sepal.Length > 5) %>% 
+  filter(Petal.Width > 0.3) %>% 
+  filter(Sepal.Width > 4)
+
+```
+
+These two code chunks do the exact same thing, but one is easier for you to read 
+
+
+## Okay sure it's a bit cleaner... But why did you write filter so many times
+
+Because it's an example, silly.
+
+There are plenty of functions to use in the tidyverse.
+
+Check out this cheat sheet https://github.com/rstudio/cheatsheets/blob/main/data-transformation.pdf
+
+
+## Lets look at them 
+```{r p4, echo=FALSE}
+
+
+
+iris2<- iris %>% 
+  filter(Species == 'setosa') %>% 
+  mutate(Petal.area = Petal.Length*Petal.Width/4 * pi^2 ) 
+# NOTE THIS IS NOT HOW YOU GET SEPAL AREA
+
+```
+
+What this says is:
+    1. Make a new dataframe called 'iris2' that is a copy of iris
+    2. After making this dataframe SUBSET it to just 'setosa' species.
+    3. THEN CREATE a and compute a new column 
+    
+In practice you're more likely to write something like this:
+    
+```{r p5, echo=FALSE}
+
+
+
+iris2<- iris %>% 
+  select(Petal.Length,Petal.Width,Species) %>% 
+  mutate(Petal.area = Petal.Length*Petal.Width/4 * pi^2 ) %>% 
+  group_by(Species) %>% 
+  summarize(avg = mean(Petal.area), st_dev = sd(Petal.area))
+
+```
+
+So now we 
+    1. Make a new dataframe
+    2. THEN CREATE and compute the area
+    3. THEN we group by species
+    4. THEN we find the mean and standard deviation for Petal area
+    
+    
+YOUR TURN :)
+
+We're using spruce data again, first let's look in it
+
+```{r homeworkbegin, echo = F}
+rm(list = ls())
+head(Spruce)
+
+spruce<- Spruce
+```
+Okay 4 columns AND its already grouped
+
+
+### QUESTION 1: Choose the functions that will finish the code below. This code chunk will make a new spruce dataframe that only includes N. REPLACE THE ______ with the function..
+
+Hint: You need to CREATE a new function and then SUBSET it
+
+```{r homework1}
+spruce <- Spruce %>% 
+  ungroup() %>% 
+  _______(treatment = substr(Tree, 0,1)) %>% 
+  _______(treatment == 'N')
+
+
+```
+
+### QUESTION 2: Summarize the original dataframe to plot and days get mean and standard deviation
+```{r homework2}
+sums<- Spruce %>% 
+  group_by(plot,days) %>% 
+  summarize(avg = mean(logSize), stdev = sd(logSize) )
+
+
+```
+
+### Question 3: Plot the average logSize for each plot as a boxplot and make each plot a different color use the new spruce dataframe I make you
+
+There are many ways to do this with ggplot()
+```{r homework3}
+spruce<-Spruce %>% 
+  mutate(time =if_else(days < 366, "year 1", "year 2")) %>% 
+  mutate(unlog = exp(logSize))
+ggplot(spruce, aes(x = plot,y = unlog, color = plot))+
+  geom_boxplot()+
+  facet_wrap(~time)
+
+```
+
+
+##Final Question: If treatment = N meant Nitrogen was added to the soil, and your sums dataframe shows that plots 3 and 4 received N treatment... then what is the previous graph showing in terms of nitrogen fertilization. Is there a difference between year 1 and year 2?
+
+
+Answer:
+
+
+
+
+
+
+
+
+#knit this into an html and submit to Canvas
