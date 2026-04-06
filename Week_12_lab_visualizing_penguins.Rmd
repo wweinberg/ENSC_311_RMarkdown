@@ -1,0 +1,229 @@
+---
+title: "Visualizing Penguins Lab"
+author: 'Your Name'
+date: 'Date'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Penguins, revisted.
+
+You previously visited the penguins in a prior lab and it turns out these data are excellent for data visualization. The `palmerpenguins` data contains size measurements for three penguin species observed on three islands in the Palmer Archipelago, Antarctica. These data were collected from 2007 - 2009 by Dr. Kristen Gorman with the Palmer Station Long Term Ecological Research Program, part of the US Long Term Ecological Research Network (https://lternet.edu). The data were imported directly from the Environmental Data Initiative (EDI) Data Portal, and are available for use by CC0 license (“No Rights Reserved”) in accordance with the Palmer Station Data Policy. Let's get started.
+
+First, load the necessary libraries: tidyverse and palmerpenguins (needed to access the penguins data). *If you do not have this package installed, install it but do not keep the installation code in your markdown file upon knitting. Remember: you only install an R package once!*
+
+```{r }
+
+
+```
+
+This lab will focus on the "penguins" dataframe (actually, a tibble). Because you have loaded the palmerpenguins package, whenever you type in "penguins" R will know what you mean. If you want it to be stored in the global environment, you can assign it the name "penguins":
+
+```{r }
+penguins <- penguins
+```
+
+Take a peak at the first two rows of the data with the code below:
+
+```{r }
+head(penguins,2)
+```
+
+## A first look at distributions of the data
+
+Let's first create some univariate visualizations of the distribution of the data, with some additions. In ggplot, you can customize the name of axes using functions added (using `+`) to a `ggplot()`: `xlab()` and `ylab()`. You can further add a title to a plot using the `ggtitle()` function. Use the `?` to learn more about their implementation. 
+
+### Q1 (5 points). Using `ggplot()` functions, recreate the plot in the assignment named Q1.png.
+
+```{r}
+
+
+
+
+
+
+```
+`
+You may get a warning message here and elsewhere. Ignore it.
+
+### Q2 (5 points). Using `ggplot()` functions, recreate the plot in Q2.png in the assignment folder. Use an alpha value of 0.3 and use the position = "jitter" argument to add random noise along the x axis to seperate the points.
+
+```{r}
+
+
+
+
+
+```
+
+## Relationships in the data
+
+### Q3 (5 points): Now let's explore some bivariate relationships. The penguins dataset is a classic example of the concept of `Simpson's Paradox`. You can demonstrate this through the relationship between Bill Length and Bill Depth. To this end, recreate the plot in Q3.png in the assignment folder where you consider the "global" relationship between these two variables in the dataframe.
+
+```{r}
+
+
+
+
+
+
+```
+
+
+### Q4 (5 points): Now, you can demonstrate how this relationship varies by Species and in fact switches when you look at it at the species level. To do this, recreate the plot in Q4.png in the assignment folder. *Hint: the method used to create the line fit geometry is from a linear model (lm).*
+```{r}
+
+
+
+
+
+
+```
+
+## Revisiting custom functions
+
+While there are tens of thousands of functions in R, you may still need to create your own to perform tasks specific to your analysis. Remember that you can create your own functions in R using the `function()` function. Below are two example custom functions.
+
+A simple function that adds one to any number:
+```{r}
+
+add_one <- function(x){
+  
+  value <- x + 1
+  return(value)
+  
+}
+
+add_one(x = 0)
+
+```
+
+A more complicated one that uses if-else logic to return an output:
+```{r}
+
+is_it_one <- function(x){
+  
+  if(x == 1){print("its 1!")}else{print("its not 1")}
+ 
+  }
+
+is_it_one(x = 5)
+
+```
+
+While custom functions can vary in their complexity, there are shared characteristics to all of them that you already know and can infer based on the similarities between the two above functions.
+
+1. A name. You must assign a name to a function.
+2. The arguments a function accepts. In both of the above cases, there is a single argument that the function accepts, named "x". Whatever you assign to the value for "x", it will get plugged into the function's code.
+3. The code, which is bounded by curly brackets `}`. The code will use whatever the value of "x" is that you passed into the function.
+4. A return statement using the `return()` function. This states what the code of the function should return. If the `return()` function is not called, the value of the last evaluated expression (piece of code) will be returned. Thus, a return statement is not always necessary when creating a custom function.
+
+### Q5 (5 points): Create a custom function called `range()` that calculates the range of a numeric vector by subtracting the minimum value from its maximum value.
+```{r}
+
+
+
+
+  
+```
+
+### Q6 (1 point): Prove your custom function works passing the below-vector into it. Write your code below the "vec" vector in the below code chunk.
+
+```{r}
+
+vec <- c(1:8)
+
+
+```
+
+## Calculating the standard error of the mean.
+
+Confidence intervals are important for defining variability, uncertainty, and precision around aggregate estimates of a variable, such as the mean. If you could measure a given trait on every single individual in a population, you could calculate the standard deviation to get at variability around the mean. But you are very unlikely able to measure every individual of a population, meaning you are left with a sample and thus a sampling distribution of a population. The standard error of the mean (SEM) is an estimate of the standard deviation of the sampling distribution. SEM is a measure of the variability of *sample* means around the population mean. It quantifies the precision or accuracy of the sample mean as an estimate of the population mean. In other words, it indicates how much the sample mean is likely to vary from the true population mean if you were to take multiple samples from the same population. 
+
+SEM is calculated as the standard deviation of a variable divided by the square root of its sample size. Unlike the `sd()`, `sqrt()`, and `length()` function, there is no built-in R function to calculate the standard error of the mean, despite its ubiquity in data analysis. But given you have those three functions, you can build a custom function that calculates SEM.
+
+### Q7 (5 points): Create a custom function called "sem" that has one argument, "x", and uses `sd()`, `sqrt()`, and `length()` in one equation to calculate SEM.
+
+```{r}
+
+
+
+
+
+
+```
+
+*As a test of your custom function,`sem()`, the SEM of c(1:7) is 0.8164966.*
+
+## Bar plots
+
+The standard error is often visually depicted using an error bar. Error bars are often associated with bar plots, where a bar geometry is used and the height of the bar is associated with some measure of the data corresponding to a categorical variable. In ggplot, this is implemented using the `geom_bar()` function. See example below:
+```{r}
+
+ggplot(iris,aes(x = Sepal.Width)) +
+  geom_bar()
+
+```
+The result is essentially a frequency distribution. This is because the default summary statistic is "count", or to count the number of values in each case or interval, much like a histogram. In contrast, the default statistic in `geom_point()` isn't really a statistic, its just the value of the data, called "identity". There are a couple workarounds for applying bar geometries to data summaries. One is to first summarize the data and then use a bar to plot the values (or "identities") of the summarized data. For example, using the built-in "iris" dataframe:
+
+```{r}
+
+iris %>%
+  dplyr::group_by(Species) %>%
+  dplyr::summarise(mean_sepal = mean(Sepal.Width)) %>%
+  ggplot(aes(x = Species,y = mean_sepal)) +
+  geom_bar(stat = "identity")
+
+```
+
+An alternative is to use the more flexible `stat_summary()` function. This function allows you to specify both the geometry using the "geom" argument and summary statistic you want to portray using the "fun" argument. You can make the same plot with less lines of code using this function:
+
+```{r}
+
+iris %>%
+  ggplot(aes(Species,Sepal.Width)) +
+  stat_summary(fun = "identity",geom = "bar")
+
+```
+However, you become a bit limited when you want to add an error bar such as a standard error of the mean to a bar plot. Error bars are a geometry added to a plot using the `geom_errorbar()` function. The bounds of error bars are dictated in a nested `aes()` function in the `geom_errorbar()` function that specifies the max and minimum bounds of the error bar on the y axis for the error bar. Typically, an error bar is placed around the mean value of a variable. As an example, you could add a 'range' error bar to a plot:
+
+```{r}
+iris %>%
+  dplyr::group_by(Species) %>%
+  dplyr::summarise(mean_sepal = mean(Sepal.Width),
+                   max_sepal = max(Sepal.Width),
+                   min_sepal = min(Sepal.Width)) %>%
+  ggplot(aes(Species,mean_sepal)) +
+  geom_bar(stat = "identity") +
+  geom_errorbar(aes(ymin = min_sepal,ymax = max_sepal),width = 0.1)
+
+```
+Thus, to add the type of error bars you want, you often have to use an already summarized dataframe.
+
+### Q8 (10 points): Create a bar plot that shows how the average penguin body mass compares across the three islands. To this end, create a pipeline that:
+
+1. Uses the correct dplyr function to group the "penguins" data by the variable "island".
+2. And then uses the `na.omit()` function to remove observations with missing values. No arguments are needed here!
+3. And then uses the correct dplyr function to calculate two summary statistics: The first is the average of "body_mass_g", naming it "mean_mass" and the second is the standard error of body mass, naming it "se_mass".
+4. And then uses the correct ggplot2 function(s) to build the bar plot in Q8.png that is provided in the assignment as your reference.
+
+*The width of the error bar should be 0.1*
+```{r}
+
+
+
+
+
+
+
+
+```
+
+
+
+## Knit and save as html and upload to canvas assignment folder.
